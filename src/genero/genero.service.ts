@@ -1,26 +1,52 @@
+import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateGeneroDto } from './dto/create-genero.dto';
 import { UpdateGeneroDto } from './dto/update-genero.dto';
 
 @Injectable()
 export class GeneroService {
-  create(createGeneroDto: CreateGeneroDto) {
-    return 'This action adds a new genero';
+  constructor(private readonly prisma: PrismaService) { }
+
+  private readonly _include = {
+    filmes: {
+      select: {
+        nome: true
+      }
+    }
+  }
+
+  create(data: CreateGeneroDto) {
+    return this.prisma.genero.create({
+      data,
+      include: this._include
+    });
   }
 
   findAll() {
-    return `This action returns all genero`;
+    return this.prisma.genero.findMany({
+      include: this._include
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} genero`;
+    return this.prisma.genero.findUnique({
+      where: { id },
+      include: this._include
+    });
   }
 
-  update(id: number, updateGeneroDto: UpdateGeneroDto) {
-    return `This action updates a #${id} genero`;
+  update(id: number, data: UpdateGeneroDto) {
+    return this.prisma.genero.update({
+      where: { id },
+      data,
+      include: this._include
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} genero`;
+    return this.prisma.genero.delete({
+      where: { id },
+      include: this._include
+    });
   }
 }
